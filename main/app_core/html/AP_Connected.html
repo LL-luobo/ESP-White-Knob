@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>白-Knob 智能配网 | WiFi配置向导</title>
+    <!-- Font Awesome 6 (简约图标库) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #e0e7ff 50%, #f0fdfa 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 20%, rgba(44, 122, 123, 0.05) 0%, transparent 40%),
+            radial-gradient(circle at 80% 80%, rgba(30, 111, 111, 0.05) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .card {
+            max-width: 560px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.1),
+            0 18px 36px -18px rgba(0, 0, 0, 0.08),
+            0 -2px 12px rgba(44, 122, 123, 0.03);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.12),
+            0 20px 40px -20px rgba(0, 0, 0, 0.1),
+            0 -2px 15px rgba(44, 122, 123, 0.05);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c7a7b 0%, #1e6f6f 85%);
+            padding: 2rem 2rem 1.75rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+        }
+
+        .header h1 {
+            margin: 0 0 0.35rem 0;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 span {
+            font-size: 2.1rem;
+            animation: pulse-icon 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .header p {
+            margin: 0.8rem 0 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+            font-weight: 400;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 40px;
+            padding: 0.35rem 1rem;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-top: 15px;
+            font-family: monospace;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-content {
+            padding: 2rem 2rem 2.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.8rem;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 550;
+            color: #1a293f;
+            margin-bottom: 0.7rem;
+            font-size: 0.95rem;
+        }
+
+        label i {
+            color: #2c7a7b;
+            font-size: 1.1rem;
+        }
+
+        .ssid-flex {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .ssid-flex input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1.75rem;
+            background-color: #fff;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            outline: none;
+            color: #0f172a;
+        }
+        .ssid-flex input:focus {
+            border-color: #2c7a7b;
+            box-shadow: 0 0 0 4px rgba(44, 122, 123, 0.12);
+            transform: translateY(-1px);
+        }
+        .scan-btn-sm {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 2rem;
+            padding: 0 1.25rem;
+            height: 52px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #1e293b;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .scan-btn-sm:hover {
+            background: #f1f5f9;
+            border-color: #2c7a7b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(44, 122, 123, 0.08);
+        }
+        .scan-btn-sm:active {
+            transform: translateY(0);
+        }
+
+        .wifi-list-container {
+            margin-top: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #f0f4f9;
+            border-radius: 1.25rem;
+            background: #fefefe;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        }
+
+        .wifi-list-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .wifi-list-container::-webkit-scrollbar-track {
+            background: #f8fafc;
+            border-radius: 10px;
+            margin: 8px 0;
+        }
+
+        .wifi-list-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .wifi-list-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .wifi-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .wifi-list li {
+            padding: 12px 20px;
+            border-bottom: 1px solid #f5f8fa;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wifi-list li:last-child {
+            border-bottom: none;
+        }
+        .wifi-list li:hover {
+            background: #f0fdfa;
+            padding-left: 22px;
+        }
+        .wifi-ssid {
+            font-weight: 500;
+            word-break: break-all;
+            color: #1e293b;
+        }
+        .wifi-signal {
+            font-size: 0.85rem;
+            color: #475569;
+            margin-left: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .empty-list {
+            padding: 20px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* 密码输入框样式 */
+        .password-row {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-row input {
+            width: 100%;
+            padding: 1rem 2.75rem 1rem 1.25rem;
+            font-size: 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1.75rem;
+            background-color: #fff;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            outline: none;
+            color: #0f172a;
+        }
+        .password-row input:focus {
+            border-color: #2c7a7b;
+            box-shadow: 0 0 0 4px rgba(44, 122, 123, 0.12);
+            transform: translateY(-1px);
+        }
+        .toggle-pwd {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: #64748b;
+            padding: 0.3rem;
+            line-height: 1;
+            width: 1.8rem;
+            text-align: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        .toggle-pwd:hover {
+            color: #2c7a7b;
+            background: #f0fdfa;
+        }
+        .toggle-pwd i {
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(105deg, #2c7a7b, #1e6f6f);
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            padding: 1.1rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 15px rgba(44, 122, 123, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button[type="submit"]::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: all 0.6s ease;
+        }
+
+        button[type="submit"]:hover::after {
+            left: 100%;
+        }
+
+        button[type="submit"]:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(44, 122, 123, 0.2);
+        }
+
+        button[type="submit"]:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 4px 10px rgba(44, 122, 123, 0.15);
+        }
+
+        button[type="submit"]:disabled {
+            background: linear-gradient(105deg, #a0bfb0, #8daca9);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-area {
+            margin-top: 1.8rem;
+            padding: 1.1rem 1.25rem;
+            background: #f8fafc;
+            border-radius: 1.25rem;
+            font-size: 0.9rem;
+            color: #1e293b;
+            border-left: 4px solid #2c7a7b;
+            transition: all 0.3s ease;
+            word-break: break-word;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .status-area.error {
+            background: #fff5f5;
+            border-left-color: #e53e3e;
+            color: #c53030;
+        }
+
+        .status-area.success {
+            background: #e6f7ec;
+            border-left-color: #2b9348;
+            color: #155724;
+        }
+
+        .status-area.warning {
+            background: #fffbeb;
+            border-left-color: #f6ad55;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #64748b;
+            border-top: 1px solid #f0f4f9;
+            padding-top: 1.25rem;
+            line-height: 1.5;
+        }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color:#5e7b9c;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 1rem;
+            }
+            .form-content {
+                padding: 1.75rem 1.5rem 2rem;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .card {
+                border-radius: 1.75rem;
+            }
+            .ssid-flex {
+                gap: 8px;
+            }
+            .scan-btn-sm {
+                padding: 0 0.85rem;
+                font-size: 0.85rem;
+                height: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>
+            <span>📡</span> 白-Knob 配网
+        </h1>
+        <p>将设备连接到您的WiFi网络</p>
+        <div class="badge" id="deviceIp">AP模式 · 配置入口</div>
+    </div>
+
+    <div class="form-content">
+        <form id="wifiForm">
+            <div class="input-group">
+                <label>
+                    <i class="fas fa-wifi"></i> WiFi名称 (SSID)
+                </label>
+                <div class="ssid-flex">
+                    <input type="text" id="ssid" name="ssid" autocomplete="off" placeholder="例如: MyHome_5G" required>
+                    <button type="button" id="scanWifiBtn" class="scan-btn-sm">
+                        <i class="fas fa-search"></i> 扫描
+                    </button>
+                </div>
+                <div id="wifiListContainer" class="wifi-list-container">
+                    <ul id="wifiList" class="wifi-list"></ul>
+                </div>
+                <div class="form-hint">点击列表项可自动填充SSID，支持手动输入</div>
+            </div>
+
+            <div class="input-group">
+                <label>
+                    <i class="fas fa-lock"></i> WiFi密码
+                </label>
+                <div class="password-row">
+                    <input type="password" id="password" name="password" placeholder="请输入WiFi密码" autocomplete="off">
+                    <button type="button" class="toggle-pwd" id="togglePwdBtn" aria-label="显示密码">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">
+                <i class="fas fa-bolt"></i> 连接并配置
+            </button>
+        </form>
+
+        <div class="status-area" id="statusMessage">
+            <i class="fas fa-lightbulb"></i> 输入WiFi信息，点击连接。设备将尝试接入您的路由器。
+        </div>
+
+        <div class="footer-note">
+            <i class="fas fa-cog"></i> 配置完成后设备将连接到目标WiFi，此页面可能断开。<br>
+            <i class="fas fa-star"></i> 支持WiFi扫描 (通过WebSocket)
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // DOM 元素
+        const ssidInput = document.getElementById('ssid');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusDiv = document.getElementById('statusMessage');
+        const scanBtn = document.getElementById('scanWifiBtn');
+        const togglePwdBtn = document.getElementById('togglePwdBtn');
+        const wifiForm = document.getElementById('wifiForm');
+        const wifiListContainer = document.getElementById('wifiListContainer');
+        const wifiListUl = document.getElementById('wifiList');
+
+        let ws = null;
+        let isConnected = false;
+        let wsConnectAttempt = 0;
+        const MAX_RECONNECT = 3;
+        let configSent = false;
+
+        function setStatus(message, type = 'info') {
+            statusDiv.innerHTML = message;
+            statusDiv.classList.remove('error', 'success', 'warning');
+            if (type === 'error') statusDiv.classList.add('error');
+            else if (type === 'success') statusDiv.classList.add('success');
+            else if (type === 'warning') statusDiv.classList.add('warning');
+            else statusDiv.classList.remove('error', 'success', 'warning');
+        }
+
+        function setLoading(isLoading, customText = null) {
+            if (isLoading) {
+                submitBtn.disabled = true;
+                const originalText = submitBtn.innerHTML;
+                submitBtn.setAttribute('data-original', originalText);
+                submitBtn.innerHTML = `<span class="loader"></span> ${customText || '配置中...'}`;
+            } else {
+                submitBtn.disabled = false;
+                const original = submitBtn.getAttribute('data-original');
+                if (original) {
+                    submitBtn.innerHTML = original;
+                } else {
+                    submitBtn.innerHTML = `<i class="fas fa-bolt"></i> 连接并配置`;
+                }
+            }
+        }
+
+        function showWifiList(show) {
+            wifiListContainer.style.display = show ? 'block' : 'none';
+        }
+
+        function renderWifiList(networks) {
+            wifiListUl.innerHTML = '';
+            if (!Array.isArray(networks) || networks.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.className = 'empty-list';
+                emptyItem.innerHTML = '<i class="fas fa-wifi-slash"></i> 暂无可用网络，请手动输入或重新扫描';
+                emptyItem.style.cursor = 'default';
+                wifiListUl.appendChild(emptyItem);
+                showWifiList(true);
+                return;
+            }
+
+            const uniqueMap = new Map();
+            networks.forEach(net => {
+                if (net.ssid && net.ssid.trim()) {
+                    const ssid = net.ssid.trim();
+                    if (!uniqueMap.has(ssid) || (net.rssi > (uniqueMap.get(ssid).rssi || -100))) {
+                        uniqueMap.set(ssid, net);
+                    }
+                }
+            });
+            const sorted = Array.from(uniqueMap.values()).sort((a,b) => (b.rssi || -100) - (a.rssi || -100));
+
+            sorted.forEach(net => {
+                const li = document.createElement('li');
+                const ssidSpan = document.createElement('span');
+                ssidSpan.className = 'wifi-ssid';
+                ssidSpan.textContent = net.ssid.trim();
+                const signalSpan = document.createElement('span');
+                signalSpan.className = 'wifi-signal';
+                if (net.rssi !== undefined) {
+                    const strength = net.rssi > -55 ? '📶 强' : (net.rssi > -75 ? '📶 中' : '📶 弱');
+                    signalSpan.textContent = strength;
+                }
+                li.appendChild(ssidSpan);
+                li.appendChild(signalSpan);
+                li.addEventListener('click', () => {
+                    ssidInput.value = net.ssid.trim();
+                    showWifiList(false);
+                });
+                wifiListUl.appendChild(li);
+            });
+            showWifiList(true);
+        }
+
+        function clearWifiList() {
+            wifiListUl.innerHTML = '';
+            showWifiList(false);
+        }
+
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = function() {
+                console.log('WebSocket connected');
+                isConnected = true;
+                wsConnectAttempt = 0;
+                configSent = false;
+                setStatus('<i class="fas fa-check-circle"></i> 已连接设备，可扫描或配置WiFi', 'success');
+                if (submitBtn.disabled && submitBtn.innerHTML.includes('已发送配置')) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<i class="fas fa-bolt"></i> 连接并配置`;
+                }
+            };
+
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (Array.isArray(data)) {
+                        renderWifiList(data);
+                        setStatus(`<i class="fas fa-check-circle"></i> 扫描到 ${data.length} 个WiFi网络，点击列表选择`, 'success');
+                        scanBtn.disabled = false;
+                        scanBtn.innerHTML = "<i class='fas fa-search'></i> 扫描";
+                    } else {
+                        console.log('Received non-array message:', data);
+                        if (data.status === 'connected') {
+                            setStatus('<i class="fas fa-party-horn"></i> WiFi连接成功！设备已接入网络。', 'success');
+                            submitBtn.disabled = true;
+                            submitBtn.innerHTML = `<i class="fas fa-check"></i> 连接成功`;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to parse WebSocket message:', e);
+                }
+            };
+
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                setStatus('<i class="fas fa-exclamation-triangle"></i> WebSocket 连接错误，请刷新页面重试', 'error');
+                isConnected = false;
+            };
+
+            ws.onclose = function() {
+                console.log('WebSocket closed');
+                isConnected = false;
+                if (configSent) {
+                    setStatus('<i class="fas fa-party-horn"></i> WiFi配置已发送，设备正在连接！若页面长时间未恢复，请手动连接到您的WiFi网络。', 'success');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `<i class="fas fa-check"></i> 已发送配置`;
+                } else if (wsConnectAttempt < MAX_RECONNECT && !submitBtn.disabled) {
+                    wsConnectAttempt++;
+                    setStatus(`<i class="fas fa-exclamation-triangle"></i> WebSocket 断开，正在重连 (${wsConnectAttempt}/${MAX_RECONNECT})...`, 'warning');
+                    setTimeout(connectWebSocket, 2000);
+                } else if (!configSent) {
+                    setStatus('<i class="fas fa-times-circle"></i> WebSocket 连接失败，请确保仍连接着设备热点并刷新页面', 'error');
+                    if (submitBtn.disabled) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `<i class="fas fa-bolt"></i> 连接并配置`;
+                    }
+                }
+            };
+        }
+
+        function scanNetworks() {
+            if (!isConnected || !ws || ws.readyState !== WebSocket.OPEN) {
+                setStatus('<i class="fas fa-exclamation-triangle"></i> WebSocket未连接，请稍后再试或刷新页面', 'error');
+                return;
+            }
+            scanBtn.disabled = true;
+            scanBtn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> 扫描中";
+            setStatus('<i class="fas fa-wifi"></i> 正在扫描附近WiFi，请稍候...', 'info');
+            clearWifiList();
+            try {
+                ws.send(JSON.stringify({ scan: "start" }));
+            } catch (err) {
+                console.error('Send scan request error:', err);
+                setStatus('<i class="fas fa-times-circle"></i> 发送扫描请求失败，请检查网络', 'error');
+                scanBtn.disabled = false;
+                scanBtn.innerHTML = "<i class='fas fa-search'></i> 扫描";
+            }
+        }
+
+        function sendWiFiConfig(ssid, password) {
+            if (!isConnected || !ws || ws.readyState !== WebSocket.OPEN) {
+                setStatus('<i class="fas fa-exclamation-triangle"></i> WebSocket未连接，无法发送配置', 'error');
+                return false;
+            }
+            const payload = {
+                ssid: ssid.trim(),
+                password: password
+            };
+            try {
+                ws.send(JSON.stringify(payload));
+                configSent = true;
+                return true;
+            } catch (err) {
+                console.error('Send config error:', err);
+                setStatus('<i class="fas fa-times-circle"></i> 发送配置失败，请重试', 'error');
+                return false;
+            }
+        }
+
+        async function onFormSubmit(e) {
+            e.preventDefault();
+            const ssid = ssidInput.value;
+            const password = passwordInput.value;
+
+            if (!ssid || ssid.trim() === "") {
+                setStatus("<i class='fas fa-times-circle'></i> 请填写WiFi名称(SSID)", "error");
+                return;
+            }
+            if (password.length > 64) {
+                setStatus("<i class='fas fa-exclamation-triangle'></i> 密码长度不能超过64个字符", "error");
+                return;
+            }
+            if (ssid.length > 32) {
+                setStatus("<i class='fas fa-exclamation-triangle'></i> SSID长度不能超过32个字符", "error");
+                return;
+            }
+
+            setLoading(true, "正在发送配置...");
+            setStatus("<i class='fas fa-wifi'></i> 正在向ESP32发送WiFi配置，请稍等...", "info");
+
+            const sent = sendWiFiConfig(ssid, password);
+            if (sent) {
+                setStatus("<i class='fas fa-check-circle'></i> 配置已发送！设备正在尝试连接WiFi。若页面断开，请手动切换到您配置的WiFi网络。", "success");
+                submitBtn.disabled = true;
+                setTimeout(() => {
+                    if (ws && ws.readyState === WebSocket.OPEN && configSent) {
+                        setStatus("<i class='fas fa-exclamation-triangle'></i> 设备未响应，请检查输入的WiFi密码是否正确，并确保信号良好。", "warning");
+                        configSent = false;
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `<i class="fas fa-bolt"></i> 连接并配置`;
+                        setLoading(false);
+                    }
+                }, 8000);
+            } else {
+                setLoading(false);
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            const icon = togglePwdBtn.querySelector('i');
+            if (type === 'password') {
+                icon.className = 'fas fa-eye';
+            } else {
+                icon.className = 'fas fa-eye-slash';
+            }
+        }
+
+        function displayDeviceIP() {
+            try {
+                const host = window.location.hostname;
+                if (host && host !== 'localhost') {
+                    const ipSpan = document.getElementById('deviceIp');
+                    if (ipSpan) ipSpan.innerHTML = `🌐 配置地址: ${host}`;
+                }
+            } catch(e) {}
+        }
+
+        function init() {
+            displayDeviceIP();
+            connectWebSocket();
+
+            wifiForm.addEventListener('submit', onFormSubmit);
+            scanBtn.addEventListener('click', () => scanNetworks());
+            togglePwdBtn.addEventListener('click', togglePasswordVisibility);
+
+            document.addEventListener('click', function(e) {
+                if (!wifiListContainer.contains(e.target) && e.target !== ssidInput && e.target !== scanBtn) {
+                    showWifiList(false);
+                }
+            });
+            ssidInput.addEventListener('focus', function() {
+                if (wifiListUl.children.length > 0) {
+                    showWifiList(true);
+                }
+            });
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
