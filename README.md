@@ -124,14 +124,6 @@ idf.py fullclean
 | `others` | data/spiffs | `0x20000` | SPIFFS 数据 |
 | `html` | data/spiffs | `32k` | Web 页面资源 |
 
-## 开发注意事项
+##项目产品渲染图
+<img width="527" height="518" alt="0de61b77d64c09d7295239678390eb40" src="https://github.com/user-attachments/assets/f5c00887-268a-46f8-97d5-278bfe462aaa" />
 
-- `build/`、`.idea/`、`.vscode/` 等本地文件不会提交到仓库。
-- `main/drivers/lcd/ui/generated/` 下为生成代码，通常应通过 UI 工具重新生成后再提交。
-- `components/` 中包含第三方组件源码，更新时请同步检查对应许可证和兼容性。
-- 修改硬件连接后，请同步更新 `main/config/pin_config.h` 和本文档的引脚表。
-- 修改分区表后，需要重新构建并重新烧录固件。
-
-## 当前仓库状态
-
-本仓库从本地 ESP32 工程整理而来，已排除构建产物和 IDE 本地配置，保留源码、组件、分区表、依赖锁文件和 `sdkconfig`，便于后续继续开发和复现构建环境。
