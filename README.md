@@ -125,5 +125,6 @@ idf.py fullclean
 | `html` | data/spiffs | `32k` | Web 页面资源 |
 
 ##项目产品渲染图
+
 <img width="527" height="518" alt="0de61b77d64c09d7295239678390eb40" src="https://github.com/user-attachments/assets/f5c00887-268a-46f8-97d5-278bfe462aaa" />
 
